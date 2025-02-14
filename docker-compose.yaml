@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  dind-jenkins:
+    image: dind-jenkins
+    build: .
+    privileged: true
+    restart: always
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    environment:
+      - GIT_USER_NAME=${GIT_USER_NAME}  # Передаем имя пользователя для git
+      - GIT_USER_EMAIL=${GIT_USER_EMAIL}  # Передаем email для git
+      - JENKINS_HOME=/var/jenkins_home
+    volumes:
+      - ~/.ssh:/root/.ssh  # Пробрасываем SSH-ключи в контейнер
+      - jenkins_home:/var/jenkins_home
+    entrypoint: >
+      /bin/bash -c "
+        git config --global user.name \"${GIT_USER_NAME}\" &&
+        git config --global user.email \"${GIT_USER_EMAIL}\" &&
+        /bin/tini -- /usr/local/bin/jenkins.sh"
