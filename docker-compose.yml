@@ -10,9 +10,6 @@ services:
     ports:
       - "8080:8080"
       - "50000:50000"
-    environment:
-      - GIT_USER_NAME=${GIT_USER_NAME}  # Передаем имя пользователя для git
-      - GIT_USER_EMAIL=${GIT_USER_EMAIL}  # Передаем email для git
     volumes:
       - jenkins:/root/.jenkins
       - ~/.ssh:/root/.ssh  # Пробрасываем SSH-ключи
