@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  dind-jenkins:
+    container_name: dind-jenkins
+    build:
+      context: .
+    image: dind-jenkins:1
+    privileged: true
+    restart: always
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    environment:
+      - GIT_USER_NAME=${GIT_USER_NAME}  # Передаем имя пользователя для git
+      - GIT_USER_EMAIL=${GIT_USER_EMAIL}  # Передаем email для git
+    volumes:
+      - jenkins:/root/.jenkins
+      - ~/.ssh:/root/.ssh  # Пробрасываем SSH-ключи
+      - ~/.gitconfig:/root/.gitconfig  # Пробрасываем глобальные настройки Git
+    networks:
+      - dind-jenkins-network
+
+
+volumes:
+  jenkins:
+    name: jenkins
+    driver: local
+
+
+networks:
+  dind-jenkins-network:
+    driver: bridge

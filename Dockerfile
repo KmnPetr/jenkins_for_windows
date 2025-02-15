@@ -1,17 +1,27 @@
 FROM docker:dind
 
-# Устанавливаем git и другие зависимости
-RUN apk add --no-cache git openjdk17
+# Устанавливаем необходимые зависимости
+RUN apk update && apk add --no-cache \
+  openjdk17-jre \
+  bash \
+  curl \
+  git \
+  python3 \
+  py3-pip \
+  ca-certificates \
+  nodejs \
+  npm
 
-# Загружаем Jenkins WAR-файл
-RUN wget -q -O /usr/share/jenkins.war https://get.jenkins.io/war-stable/latest/jenkins.war
+#добавление шрифтов для дженкинса
+RUN apk add --no-cache fontconfig ttf-dejavu
+# Создаём папку для Jenkins
+RUN mkdir -p /usr/share/jenkins
 
-# Создаём папку для Jenkins и задаём рабочую директорию
-RUN mkdir -p /var/jenkins_home && chmod 777 /var/jenkins_home
-ENV JENKINS_HOME /var/jenkins_home
+# Загружаем последнюю стабильную версию Jenkins WAR
+RUN curl -fsSL https://get.jenkins.io/war-stable/latest/jenkins.war -o /usr/share/jenkins/jenkins.war
 
-# Открываем порт для веб-интерфейса Jenkins
+# Открываем порт Jenkins
 EXPOSE 8080
 
-# Запускаем Docker-демон и Jenkins
-CMD dockerd & java -jar /usr/share/jenkins.war
+# Запускаем Jenkins
+CMD ["java", "-jar", "/usr/share/jenkins/jenkins.war"]
